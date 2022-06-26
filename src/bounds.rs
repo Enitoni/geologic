@@ -121,6 +121,28 @@ impl_bounds!(i128);
 impl_bounds!(f32);
 impl_bounds!(f64);
 
+impl<T> From<Bounds2D<T>> for [T; 4] {
+    fn from(bounds: Bounds2D<T>) -> Self {
+        [
+            bounds.position.x,
+            bounds.position.y,
+            bounds.size.width,
+            bounds.size.height,
+        ]
+    }
+}
+
+impl<T> From<Bounds2D<T>> for (T, T, T, T) {
+    fn from(bounds: Bounds2D<T>) -> Self {
+        (
+            bounds.position.x,
+            bounds.position.y,
+            bounds.size.width,
+            bounds.size.height,
+        )
+    }
+}
+
 pub trait IntoBounds2D<T> {
     fn to_bounds(self) -> Bounds2D<T>;
 }
