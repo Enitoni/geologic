@@ -7,14 +7,6 @@ macro_rules! impl_point {
 
                 (0..2).fold(<$t>::default(), |acc, i| acc + a[i] * b[i])
             }
-
-            pub fn x(&self) -> $t {
-                self.x
-            }
-
-            pub fn y(&self) -> $t {
-                self.y
-            }
         }
 
         impl std::ops::Add for Point2D<$t> {
@@ -56,17 +48,28 @@ macro_rules! impl_into_point {
 /// A vector describing a point in 2D space.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Point2D<T> {
-    x: T,
-    y: T,
+    pub(crate) x: T,
+    pub(crate) y: T,
 }
 
-impl<T> Point2D<T> {
+impl<T> Point2D<T>
+where
+    T: Copy + Sized,
+{
     pub fn new(x: T, y: T) -> Self {
         Self { x, y }
     }
 
     pub fn from<P: IntoPoint2D<T>>(point: P) -> Self {
         point.to_point()
+    }
+
+    pub fn x(&self) -> T {
+        self.x
+    }
+
+    pub fn y(&self) -> T {
+        self.y
     }
 }
 

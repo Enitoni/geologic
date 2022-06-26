@@ -4,14 +4,6 @@ macro_rules! impl_size {
             pub fn area(&self) -> $t {
                 self.width * self.height
             }
-
-            pub fn width(&self) -> $t {
-                self.width
-            }
-
-            pub fn height(&self) -> $t {
-                self.height
-            }
         }
 
         impl std::ops::Add for Size2D<$t> {
@@ -53,8 +45,8 @@ macro_rules! impl_into_size {
 /// A vector describing a two-dimensional size.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Size2D<T> {
-    width: T,
-    height: T,
+    pub(crate) width: T,
+    pub(crate) height: T,
 }
 
 impl<T> Size2D<T>
@@ -71,6 +63,14 @@ where
 
     pub fn square(size: T) -> Self {
         Self::new(size, size)
+    }
+
+    pub fn width(&self) -> T {
+        self.width
+    }
+
+    pub fn height(&self) -> T {
+        self.height
     }
 }
 
