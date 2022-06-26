@@ -74,6 +74,8 @@ where
     }
 }
 
+impl_size!(usize);
+
 impl_size!(u8);
 impl_size!(u16);
 impl_size!(u32);

@@ -73,6 +73,8 @@ where
     }
 }
 
+impl_point!(usize);
+
 impl_point!(u8);
 impl_point!(u16);
 impl_point!(u32);

@@ -37,6 +37,20 @@ macro_rules! impl_bounds {
                 self.position.y + self.size.height
             }
         }
+
+        impl IntoBounds2D<$t> for ($t, $t, $t, $t) {
+            fn to_bounds(self) -> Bounds2D<$t> {
+                let (x, y, width, height) = self;
+                Bounds2D::new(x, y, width, height)
+            }
+        }
+
+        impl IntoBounds2D<$t> for [$t; 4] {
+            fn to_bounds(self) -> Bounds2D<$t> {
+                let [x, y, width, height] = self;
+                Bounds2D::new(x, y, width, height)
+            }
+        }
     };
 }
 
@@ -90,6 +104,8 @@ where
     }
 }
 
+impl_bounds!(usize);
+
 impl_bounds!(u8);
 impl_bounds!(u16);
 impl_bounds!(u32);
@@ -104,3 +120,13 @@ impl_bounds!(i128);
 
 impl_bounds!(f32);
 impl_bounds!(f64);
+
+pub trait IntoBounds2D<T> {
+    fn to_bounds(self) -> Bounds2D<T>;
+}
+
+impl<T> IntoBounds2D<T> for Bounds2D<T> {
+    fn to_bounds(self) -> Bounds2D<T> {
+        self
+    }
+}
