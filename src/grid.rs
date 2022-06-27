@@ -3,7 +3,7 @@ use std::{
     ops::Range,
 };
 
-use crate::IntoBounds2D;
+use crate::{IntoBounds2D, Size2D};
 
 #[macro_export]
 macro_rules! grid {
@@ -106,6 +106,13 @@ impl<T, const S: usize> Grid2D<T, S> {
             let slice = &mut arr[range];
             write(row, slice);
         }
+    }
+
+    pub fn size(&self) -> Size2D<usize> {
+        let width = self.width;
+        let height = (self.arr.len() / self.chunk_size) / self.width;
+
+        Size2D::from((width, height))
     }
 }
 
