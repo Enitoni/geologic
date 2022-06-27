@@ -56,6 +56,7 @@ macro_rules! impl_bounds {
 
 /// A bounding box, with a size and position.
 /// Also known as a rect, or rectangle.
+#[derive(Debug, Clone, Copy)]
 pub struct Bounds2D<T> {
     position: Point2D<T>,
     size: Size2D<T>,
