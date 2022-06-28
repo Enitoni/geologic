@@ -3,7 +3,16 @@ use std::{
     ops::{IndexMut, Range},
 };
 
-use crate::{IntoBounds2D, Size2D};
+use crate::{IntoBounds2D, IntoPoint2D, Size2D};
+
+fn index_at<P: IntoPoint2D<usize>>(point: P, grid_width: usize, chunk_size: usize) -> usize {
+    let (x, y) = point.to_point().into();
+
+    let cell_x = x * chunk_size;
+    let cell_y = y * (grid_width * chunk_size);
+
+    cell_x + cell_y
+}
 
 fn row_ranges<B: IntoBounds2D<usize>>(
     bounds: B,
@@ -155,6 +164,13 @@ where
         let height = (self.arr.as_ref().len() / self.chunk_size) / self.width;
 
         Size2D::from((width, height))
+    }
+
+    pub fn index<P>(&self, position: P) -> usize
+    where
+        P: IntoPoint2D<usize>,
+    {
+        index_at(position, self.width, self.chunk_size)
     }
 
     pub fn values(&self) -> &[T::Item] {
