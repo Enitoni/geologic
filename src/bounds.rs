@@ -1,3 +1,5 @@
+use num_traits::Num;
+
 use crate::{IntoPoint2D, IntoSize2D, Point2D, Size2D};
 
 macro_rules! impl_bounds {
@@ -64,7 +66,7 @@ pub struct Bounds2D<T> {
 
 impl<T> Bounds2D<T>
 where
-    T: Copy + Sized,
+    T: Num + Copy,
 {
     pub fn new(x: T, y: T, width: T, height: T) -> Self {
         let position = Point2D::new(x, y);

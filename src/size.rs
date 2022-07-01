@@ -1,3 +1,5 @@
+use num_traits::AsPrimitive;
+
 macro_rules! impl_size {
     ($t: ty) => {
         impl Size2D<$t> {
@@ -71,6 +73,17 @@ where
 
     pub fn height(&self) -> T {
         self.height
+    }
+
+    pub fn cast<C>(&self) -> Size2D<C>
+    where
+        C: Copy + 'static,
+        T: AsPrimitive<C>,
+    {
+        Size2D {
+            width: self.width.as_(),
+            height: self.height.as_(),
+        }
     }
 }
 

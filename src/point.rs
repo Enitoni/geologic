@@ -1,3 +1,6 @@
+use num_traits::AsPrimitive;
+
+// TODO: Use num-traits
 macro_rules! impl_point {
     ($t: ty) => {
         impl Point2D<$t> {
@@ -46,7 +49,7 @@ macro_rules! impl_into_point {
 }
 
 /// A vector describing a point in 2D space.
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Debug, PartialEq, Clone, Copy)]
 pub struct Point2D<T> {
     pub(crate) x: T,
     pub(crate) y: T,
@@ -54,7 +57,7 @@ pub struct Point2D<T> {
 
 impl<T> Point2D<T>
 where
-    T: Copy + Sized,
+    T: Copy,
 {
     pub fn new(x: T, y: T) -> Self {
         Self { x, y }
@@ -70,6 +73,17 @@ where
 
     pub fn y(&self) -> T {
         self.y
+    }
+
+    pub fn cast<C>(&self) -> Point2D<C>
+    where
+        C: Copy + 'static,
+        T: AsPrimitive<C>,
+    {
+        Point2D {
+            x: self.x.as_(),
+            y: self.y.as_(),
+        }
     }
 }
 
