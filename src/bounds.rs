@@ -80,7 +80,7 @@ where
         P: IntoPoint2D<T>,
         S: IntoSize2D<T>,
     {
-        let position = position.to_point();
+        let position = position.into_point();
         let size = size.to_size();
 
         Self { position, size }

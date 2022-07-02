@@ -6,7 +6,7 @@ use std::{
 use crate::{IntoBounds2D, IntoPoint2D, Size2D};
 
 fn index_at<P: IntoPoint2D<usize>>(point: P, grid_width: usize, chunk_size: usize) -> usize {
-    let (x, y) = point.to_point().into();
+    let (x, y) = point.into_point().into();
 
     let cell_x = x * chunk_size;
     let cell_y = y * (grid_width * chunk_size);
