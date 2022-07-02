@@ -1,5 +1,5 @@
 use num_traits::{AsPrimitive, Num, NumAssign};
-use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// A 2D vector. You can use this
 /// for positioning or displacement.
@@ -137,6 +137,28 @@ where
     }
 }
 
+/// Implements dividing two points
+impl<T> Div for Point2D<T>
+where
+    T: Num + Copy,
+{
+    type Output = Point2D<T>;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        Point2D::new(self.x / rhs.x, self.y / rhs.y)
+    }
+}
+
+impl<T> DivAssign for Point2D<T>
+where
+    T: Num + NumAssign + Copy,
+{
+    fn div_assign(&mut self, rhs: Self) {
+        self.x /= rhs.x;
+        self.y /= rhs.y;
+    }
+}
+
 // Ergonomics for converting between Point2D and other types
 impl<T> From<Point2D<T>> for [T; 2] {
     fn from(point: Point2D<T>) -> Self {
@@ -239,5 +261,17 @@ mod test {
 
         a *= point!(2, 0);
         assert_eq!(a, point!(40, 0));
+
+        // Division
+        let a = point!(10, 2);
+        let b = point!(2, 2);
+
+        assert_eq!(a / b, point!(5, 1));
+
+        // Division assign
+        let mut a = point!(20, 20);
+
+        a /= point!(2, 2);
+        assert_eq!(a, point!(10, 10));
     }
 }
