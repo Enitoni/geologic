@@ -1,4 +1,4 @@
-//! Mathematical and geometrical helpers.
+//! Mathematical and geometrical helpers with focus on ergonomics.
 //! Note, this library is a work in progress.
 //! Documentation is therefore not adequate.
 
