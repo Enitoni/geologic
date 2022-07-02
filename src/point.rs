@@ -72,88 +72,108 @@ where
 }
 
 /// Implements adding two points together.
-impl<T> Add for Point2D<T>
+impl<T, R> Add<R> for Point2D<T>
 where
     T: Num + Copy,
+    R: IntoPoint2D<T>,
 {
     type Output = Point2D<T>;
 
-    fn add(self, rhs: Self) -> Self::Output {
+    fn add(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_point();
         Point2D::new(self.x + rhs.x, self.y + rhs.y)
     }
 }
 
-impl<T> AddAssign for Point2D<T>
+impl<T, R> AddAssign<R> for Point2D<T>
 where
-    T: NumAssign + Copy,
+    T: Num + NumAssign + Copy,
+    R: IntoPoint2D<T>,
 {
-    fn add_assign(&mut self, rhs: Self) {
+    fn add_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_point();
+
         self.x += rhs.x;
         self.y += rhs.y;
     }
 }
 
 /// Implements subtracting two points
-impl<T> Sub for Point2D<T>
+impl<T, R> Sub<R> for Point2D<T>
 where
     T: Num + Copy,
+    R: IntoPoint2D<T>,
 {
     type Output = Point2D<T>;
 
-    fn sub(self, rhs: Self) -> Self::Output {
+    fn sub(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_point();
         Point2D::new(self.x - rhs.x, self.y - rhs.y)
     }
 }
 
-impl<T> SubAssign for Point2D<T>
+impl<T, R> SubAssign<R> for Point2D<T>
 where
     T: Num + NumAssign + Copy,
+    R: IntoPoint2D<T>,
 {
-    fn sub_assign(&mut self, rhs: Self) {
+    fn sub_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_point();
+
         self.x -= rhs.x;
         self.y -= rhs.y;
     }
 }
 
 /// Implements multiplying two points
-impl<T> Mul for Point2D<T>
+impl<T, R> Mul<R> for Point2D<T>
 where
     T: Num + Copy,
+    R: IntoPoint2D<T>,
 {
     type Output = Point2D<T>;
 
-    fn mul(self, rhs: Self) -> Self::Output {
+    fn mul(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_point();
         Point2D::new(self.x * rhs.x, self.y * rhs.y)
     }
 }
 
-impl<T> MulAssign for Point2D<T>
+impl<T, R> MulAssign<R> for Point2D<T>
 where
     T: Num + NumAssign + Copy,
+    R: IntoPoint2D<T>,
 {
-    fn mul_assign(&mut self, rhs: Self) {
+    fn mul_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_point();
+
         self.x *= rhs.x;
         self.y *= rhs.y;
     }
 }
 
 /// Implements dividing two points
-impl<T> Div for Point2D<T>
+impl<T, R> Div<R> for Point2D<T>
 where
     T: Num + Copy,
+    R: IntoPoint2D<T>,
 {
     type Output = Point2D<T>;
 
-    fn div(self, rhs: Self) -> Self::Output {
+    fn div(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_point();
         Point2D::new(self.x / rhs.x, self.y / rhs.y)
     }
 }
 
-impl<T> DivAssign for Point2D<T>
+impl<T, R> DivAssign<R> for Point2D<T>
 where
     T: Num + NumAssign + Copy,
+    R: IntoPoint2D<T>,
 {
-    fn div_assign(&mut self, rhs: Self) {
+    fn div_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_point();
+
         self.x /= rhs.x;
         self.y /= rhs.y;
     }
