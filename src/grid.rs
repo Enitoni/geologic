@@ -152,6 +152,26 @@ where
         self.arr.write(rows, write);
     }
 
+    /// Copies the incoming slice of data onto the specified bounds within the grid.
+    /// This assumes that the data has the same chunk_size as the grid.
+    pub fn insert<B: IntoBounds2D<usize>>(&mut self, bounds: B, data: &[T::Item])
+    where
+        T::Item: Copy,
+    {
+        let bounds = bounds.to_bounds();
+        let line_length = bounds.width() * self.chunk_size;
+
+        // Get each line of the data
+        let mut chunked = data.chunks_exact(line_length);
+
+        self.write(bounds, |row, slice| match chunked.next() {
+            None => panic!("Grid2D::insert() Expected incoming data to have {} rows but data stopped at row {}.", bounds.height(), row),
+            Some(data) => {
+                slice.copy_from_slice(data)
+            },
+        })
+    }
+
     pub fn slice<B: IntoBounds2D<usize>>(&self, bounds: B) -> Vec<&T::Item> {
         let rows = row_ranges(bounds, self.width, self.chunk_size);
         let mapped: Vec<_> = rows.flat_map(|r| &self.arr[r]).collect();
@@ -275,6 +295,22 @@ mod test {
             0, 0, 0, 0, 0, 0, //
             5, 5, 7, 7, 2, 2, //
             0, 0, 2, 2, 2, 2,
+        ];
+
+        assert_eq!(grid.values(), expected_result);
+    }
+
+    #[test]
+    fn insert() {
+        let mut grid = Grid2D::new([0; { 3 * 3 * 2 }], 3, 2);
+
+        let data_to_insert = [1, 2, 3, 4];
+        grid.insert((1, 1, 1, 2), &data_to_insert);
+
+        let expected_result = &[
+            0, 0, 0, 0, 0, 0, //
+            0, 0, 1, 2, 0, 0, //
+            0, 0, 3, 4, 0, 0,
         ];
 
         assert_eq!(grid.values(), expected_result);
