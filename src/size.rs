@@ -7,8 +7,8 @@ use std::{
 /// A vector describing a two-dimensional size.
 #[derive(Debug, Default, PartialEq, Clone, Copy, Hash)]
 pub struct Size2D<T> {
-    pub(crate) width: T,
-    pub(crate) height: T,
+    pub width: T,
+    pub height: T,
 }
 
 impl<T> Size2D<T>
@@ -80,14 +80,6 @@ where
             width: self.width.as_(),
             height: self.height.as_(),
         }
-    }
-
-    pub fn width(&self) -> T {
-        self.width
-    }
-
-    pub fn height(&self) -> T {
-        self.height
     }
 }
 
