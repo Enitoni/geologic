@@ -10,13 +10,12 @@ mod grid;
 mod point;
 mod size;
 
-#[doc(hidden)]
-mod prelude {
-    pub use crate::bounds::*;
-    pub use crate::grid::*;
-    pub use crate::macros::*;
-    pub use crate::point::*;
-    pub use crate::size::*;
-}
+pub use crate::bounds::*;
+pub use crate::grid::*;
+pub use crate::point::*;
 
-pub use prelude::*;
+#[doc(inline)]
+pub use crate::macros::*;
+
+#[doc(inline)]
+pub use crate::size::*;
