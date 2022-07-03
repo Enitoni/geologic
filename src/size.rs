@@ -5,7 +5,7 @@ use std::{
 };
 
 /// A vector describing a two-dimensional size.
-#[derive(Debug, PartialEq, Clone, Copy, Hash)]
+#[derive(Debug, Default, PartialEq, Clone, Copy, Hash)]
 pub struct Size2D<T> {
     pub(crate) width: T,
     pub(crate) height: T,
