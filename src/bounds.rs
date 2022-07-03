@@ -2,60 +2,6 @@ use num_traits::Num;
 
 use crate::{IntoPoint2D, IntoSize2D, Point2D, Size2D};
 
-macro_rules! impl_bounds {
-    ($t: ty) => {
-        impl Bounds2D<$t> {
-            pub fn expand<S: IntoSize2D<$t>>(&self, size: S) -> Bounds2D<$t> {
-                let size = size.to_size();
-
-                let new_width = self.size.width.max(size.width);
-                let new_height = self.size.height.max(size.height);
-
-                Bounds2D::from(self.position, (new_width, new_height))
-            }
-
-            pub fn shrink<S: IntoSize2D<$t>>(&self, size: S) -> Bounds2D<$t> {
-                let size = size.to_size();
-
-                let new_width = self.size.width.min(size.width);
-                let new_height = self.size.height.min(size.height);
-
-                Bounds2D::from(self.position, (new_width, new_height))
-            }
-
-            pub fn top(&self) -> $t {
-                self.position.y
-            }
-
-            pub fn left(&self) -> $t {
-                self.position.x
-            }
-
-            pub fn right(&self) -> $t {
-                self.position.x + self.size.width
-            }
-
-            pub fn bottom(&self) -> $t {
-                self.position.y + self.size.height
-            }
-        }
-
-        impl IntoBounds2D<$t> for ($t, $t, $t, $t) {
-            fn to_bounds(self) -> Bounds2D<$t> {
-                let (x, y, width, height) = self;
-                Bounds2D::new(x, y, width, height)
-            }
-        }
-
-        impl IntoBounds2D<$t> for [$t; 4] {
-            fn to_bounds(self) -> Bounds2D<$t> {
-                let [x, y, width, height] = self;
-                Bounds2D::new(x, y, width, height)
-            }
-        }
-    };
-}
-
 /// A bounding box, with a size and position.
 /// Also known as a rect, or rectangle.
 #[derive(Debug, Clone, Copy)]
@@ -81,7 +27,7 @@ where
         S: IntoSize2D<T>,
     {
         let position = position.into_point();
-        let size = size.to_size();
+        let size = size.into_size();
 
         Self { position, size }
     }
@@ -98,6 +44,22 @@ where
         self.size.height()
     }
 
+    pub fn top(&self) -> T {
+        self.position.y
+    }
+
+    pub fn left(&self) -> T {
+        self.position.x
+    }
+
+    pub fn right(&self) -> T {
+        self.position.x + self.size.width
+    }
+
+    pub fn bottom(&self) -> T {
+        self.position.y + self.size.height
+    }
+
     pub fn size(&self) -> Size2D<T> {
         self.size.clone()
     }
@@ -107,22 +69,29 @@ where
     }
 }
 
-impl_bounds!(usize);
+impl<T> Bounds2D<T>
+where
+    T: Num + Copy + Ord,
+{
+    pub fn expand<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+        let size = size.into_size();
 
-impl_bounds!(u8);
-impl_bounds!(u16);
-impl_bounds!(u32);
-impl_bounds!(u64);
-impl_bounds!(u128);
+        // TODO: Make this max/min method on size
+        let new_width = self.size.width.max(size.width);
+        let new_height = self.size.height.max(size.height);
 
-impl_bounds!(i8);
-impl_bounds!(i16);
-impl_bounds!(i32);
-impl_bounds!(i64);
-impl_bounds!(i128);
+        Bounds2D::from(self.position, (new_width, new_height))
+    }
 
-impl_bounds!(f32);
-impl_bounds!(f64);
+    pub fn shrink<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+        let size = size.into_size();
+
+        let new_width = self.size.width.min(size.width);
+        let new_height = self.size.height.min(size.height);
+
+        Bounds2D::from(self.position, (new_width, new_height))
+    }
+}
 
 impl<T> From<Bounds2D<T>> for [T; 4] {
     fn from(bounds: Bounds2D<T>) -> Self {
@@ -153,5 +122,25 @@ pub trait IntoBounds2D<T> {
 impl<T> IntoBounds2D<T> for Bounds2D<T> {
     fn to_bounds(self) -> Bounds2D<T> {
         self
+    }
+}
+
+impl<T> IntoBounds2D<T> for (T, T, T, T)
+where
+    T: Num + Copy,
+{
+    fn to_bounds(self) -> Bounds2D<T> {
+        let (x, y, width, height) = self;
+        Bounds2D::new(x, y, width, height)
+    }
+}
+
+impl<T> IntoBounds2D<T> for [T; 4]
+where
+    T: Num + Copy,
+{
+    fn to_bounds(self) -> Bounds2D<T> {
+        let [x, y, width, height] = self;
+        Bounds2D::new(x, y, width, height)
     }
 }

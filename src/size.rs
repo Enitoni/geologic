@@ -1,48 +1,5 @@
-use num_traits::AsPrimitive;
-
-macro_rules! impl_size {
-    ($t: ty) => {
-        impl Size2D<$t> {
-            pub fn area(&self) -> $t {
-                self.width * self.height
-            }
-        }
-
-        impl std::ops::Add for Size2D<$t> {
-            type Output = Size2D<$t>;
-
-            fn add(self, rhs: Self) -> Self::Output {
-                Size2D::new(self.width + rhs.width, self.height + rhs.height)
-            }
-        }
-
-        impl std::ops::Sub for Size2D<$t> {
-            type Output = Size2D<$t>;
-
-            fn sub(self, rhs: Self) -> Self::Output {
-                Size2D::new(self.width - rhs.width, self.height - rhs.height)
-            }
-        }
-
-        impl_into_size!($t);
-    };
-}
-
-macro_rules! impl_into_size {
-    ($t: ty) => {
-        impl IntoSize2D<$t> for ($t, $t) {
-            fn to_size(self) -> Size2D<$t> {
-                Size2D::new(self.0, self.1)
-            }
-        }
-
-        impl IntoSize2D<$t> for [$t; 2] {
-            fn to_size(self) -> Size2D<$t> {
-                Size2D::new(self[0], self[1])
-            }
-        }
-    };
-}
+use num_traits::{AsPrimitive, Num, NumAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// A vector describing a two-dimensional size.
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -53,14 +10,14 @@ pub struct Size2D<T> {
 
 impl<T> Size2D<T>
 where
-    T: Copy + Sized,
+    T: Copy,
 {
     pub fn new(width: T, height: T) -> Self {
         Self { width, height }
     }
 
     pub fn from<P: IntoSize2D<T>>(size: P) -> Self {
-        size.to_size()
+        size.into_size()
     }
 
     pub fn square(size: T) -> Self {
@@ -87,22 +44,122 @@ where
     }
 }
 
-impl_size!(usize);
+impl<T> Size2D<T>
+where
+    T: Num + Copy,
+{
+    pub fn area(&self) -> T {
+        self.width * self.height
+    }
+}
 
-impl_size!(u8);
-impl_size!(u16);
-impl_size!(u32);
-impl_size!(u64);
-impl_size!(u128);
+/// Implements adding two sizes together.
+impl<T, R> Add<R> for Size2D<T>
+where
+    T: Num + Copy,
+    R: IntoSize2D<T>,
+{
+    type Output = Size2D<T>;
 
-impl_size!(i8);
-impl_size!(i16);
-impl_size!(i32);
-impl_size!(i64);
-impl_size!(i128);
+    fn add(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_size();
+        Size2D::new(self.width + rhs.width, self.height + rhs.height)
+    }
+}
 
-impl_size!(f32);
-impl_size!(f64);
+impl<T, R> AddAssign<R> for Size2D<T>
+where
+    T: Num + NumAssign + Copy,
+    R: IntoSize2D<T>,
+{
+    fn add_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_size();
+
+        self.width += rhs.width;
+        self.height += rhs.height;
+    }
+}
+
+/// Implements subtracting two sizes
+impl<T, R> Sub<R> for Size2D<T>
+where
+    T: Num + Copy,
+    R: IntoSize2D<T>,
+{
+    type Output = Size2D<T>;
+
+    fn sub(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_size();
+        Size2D::new(self.width - rhs.width, self.height - rhs.height)
+    }
+}
+
+impl<T, R> SubAssign<R> for Size2D<T>
+where
+    T: Num + NumAssign + Copy,
+    R: IntoSize2D<T>,
+{
+    fn sub_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_size();
+
+        self.width -= rhs.width;
+        self.height -= rhs.height;
+    }
+}
+
+/// Implements multiplying two points
+impl<T, R> Mul<R> for Size2D<T>
+where
+    T: Num + Copy,
+    R: IntoSize2D<T>,
+{
+    type Output = Size2D<T>;
+
+    fn mul(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_size();
+        Size2D::new(self.width * rhs.width, self.height * rhs.height)
+    }
+}
+
+impl<T, R> MulAssign<R> for Size2D<T>
+where
+    T: Num + NumAssign + Copy,
+    R: IntoSize2D<T>,
+{
+    fn mul_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_size();
+
+        self.width *= rhs.width;
+        self.height *= rhs.height;
+    }
+}
+
+/// Implements dividing two points
+impl<T, R> Div<R> for Size2D<T>
+where
+    T: Num + Copy,
+    R: IntoSize2D<T>,
+{
+    type Output = Size2D<T>;
+
+    fn div(self, rhs: R) -> Self::Output {
+        let rhs = rhs.into_size();
+        Size2D::new(self.width / rhs.width, self.height / rhs.height)
+    }
+}
+
+impl<T, R> DivAssign<R> for Size2D<T>
+where
+    T: Num + NumAssign + Copy,
+    R: IntoSize2D<T>,
+{
+    fn div_assign(&mut self, rhs: R) {
+        let rhs = rhs.into_size();
+
+        self.width /= rhs.width;
+        self.height /= rhs.height;
+    }
+}
 
 impl<T> From<Size2D<T>> for [T; 2] {
     fn from(size: Size2D<T>) -> Self {
@@ -116,13 +173,51 @@ impl<T> From<Size2D<T>> for (T, T) {
     }
 }
 
+impl<T> From<[T; 2]> for Size2D<T>
+where
+    T: Num + Copy,
+{
+    fn from(arr: [T; 2]) -> Self {
+        Size2D::from(arr)
+    }
+}
+
+impl<T> From<(T, T)> for Size2D<T>
+where
+    T: Num + Copy,
+{
+    fn from(tuple: (T, T)) -> Self {
+        Size2D::from(tuple)
+    }
+}
+
 /// Can be turned into a [Size2D]
 pub trait IntoSize2D<T> {
-    fn to_size(self) -> Size2D<T>;
+    fn into_size(self) -> Size2D<T>;
 }
 
 impl<T> IntoSize2D<T> for Size2D<T> {
-    fn to_size(self) -> Size2D<T> {
+    fn into_size(self) -> Size2D<T> {
         self
+    }
+}
+
+// Allows passing a tuple to functions that expect IntoSize2D
+impl<T> IntoSize2D<T> for (T, T)
+where
+    T: Num + Copy,
+{
+    fn into_size(self) -> Size2D<T> {
+        Size2D::new(self.0, self.1)
+    }
+}
+
+// Allows passing an array to functions that expect IntoSize2D
+impl<T> IntoSize2D<T> for [T; 2]
+where
+    T: Num + Copy,
+{
+    fn into_size(self) -> Size2D<T> {
+        Size2D::new(self[0], self[1])
     }
 }
