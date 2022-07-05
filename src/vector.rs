@@ -3,7 +3,7 @@ use std::{
     ops::{Add, Mul, Sub},
 };
 
-use num_traits::Signed;
+use num_traits::{AsPrimitive, Signed};
 
 /// A trait defining common helper methods
 /// to aid in the usage of a vector, or types with underlying vectors.
@@ -84,6 +84,20 @@ impl<T, K> Vector2D<T, K> {
         Self {
             x: value,
             y: value,
+            _kind: PhantomData,
+        }
+    }
+
+    /// Casts `self` into a new [Vector2D]
+    /// where components are the (usually inferred) input type.
+    pub fn cast<C>(self) -> Vector2D<C, K>
+    where
+        C: Copy + 'static,
+        T: AsPrimitive<C>,
+    {
+        Vector2D {
+            x: self.x.as_(),
+            y: self.y.as_(),
             _kind: PhantomData,
         }
     }
