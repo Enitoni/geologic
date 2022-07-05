@@ -244,12 +244,11 @@ where
 
 #[cfg(test)]
 mod test {
-    use super::Grid2D;
-    use crate::Bounds2D;
+    use crate::*;
 
     #[test]
     fn row_ranges() {
-        let bounds = Bounds2D::from((1, 1), (1, 2));
+        let bounds = bounds!(1, 1, 1, 2);
 
         // 0, 1, 2
         // 3, X, 5,
