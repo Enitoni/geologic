@@ -1,17 +1,53 @@
-/// Shorthand for creating a new size.
-/// The number of arguments determine the dimensions.
-///
-/// # Examples
-/// ```
-/// # use geologic::*;
-/// // A two-dimensional size
-/// let size = size!(200, 200);
-/// 
-/// // A square shaped size
-/// let size = size!(200; 2);
-/// ```
+//! Helper macros for instantiating different kinds of algebraic types.
+//!
+//! _The following documentation applies to:_
+//! - `bounds!()`
+//! - `size!()`
+//! - `point!()`
+//! - `offset!()`
+//!
+//! # Creating vector types
+//! To create one of the aforementioned types, simply specify the components.
+//! The number of components determine the dimensions, for example
+//!
+//! ```ignore
+//! // This creates a Size2D, because we specified 2 arguments.
+//! let very_big = size!(500, 500);
+//! ```
+//!
+//! ## Exceptions
+//! For [`Bounds2D`](crate::Bounds2D) it is the same,
+//! except the number of arguments are doubled.
+//!
+//! ```ignore
+//! // This creates a Bounds2D
+//! let bounds = bounds!(0, 20, 10, 10);
+//! ```
+//!
+//! # Splat syntax
+//! A type can be created with initalized values
+//! by specifying the value followed by a semicolon
+//! and the number of dimensions.
+//!
+//! ```
+//! # use geologic::*;
+//! #
+//! // This creates a Point2D where X and Y is `5`.
+//! let point = point!(5; 2);
+//!
+//! // This creates an Offset2D where X and Y is `0u8`.
+//! let offset = offset!(u8; 2);
+//!
+//! // No exception for bounds here, this is a Bounds2D.
+//! let bounds = bounds!(10; 2);
+//! ```
+
+/// Creates a new size.
 #[macro_export]
 macro_rules! size {
+    ($t: ty; 2) => {
+        $crate::Size2D::square(<$t>::default());
+    };
     ($v:expr; 2) => {
         $crate::Size2D::square($v)
     };
@@ -20,46 +56,21 @@ macro_rules! size {
     };
 }
 
-/// Shorthand for creating a new bounding box.
-/// The number of arguments determine the dimensions.
-///
-/// # Examples
-/// ```
-/// # use geologic::*;
-/// // A Bounds2D
-/// let bounds = bounds!(20, 50, 800, 900);
-/// ```
+/// Creates a new bounding box.
 #[macro_export]
 macro_rules! bounds {
+    ($t: ty; 2) => {
+        $crate::Bounds2D::splat(<$t>::default());
+    };
+    ($v:expr; 2) => {
+        $crate::Bounds2D::splat($v)
+    };
     ($x:expr, $y:expr, $width:expr, $height:expr) => {
         $crate::Bounds2D::new($x, $y, $width, $height)
     };
 }
 
-#[macro_export]
-#[doc(hidden)]
-macro_rules! __vector {
-    ($v:expr; 2) => {
-        $crate::Vector2D::splat($v)
-    };
-    ($x:expr, $y:expr) => {
-        $crate::Vector2D::new($x, $y)
-    };
-}
-
 /// Creates a new point vector.
-/// The number of arguments determine the dimensions.
-///
-/// # Examples
-/// ```
-/// # use geologic::*;
-/// #
-/// // A two-dimensional point
-/// let point = point!(20, 40);
-///
-/// // A two-dimensional splatted point
-/// let point = point!(20; 2);
-/// ```
 #[macro_export]
 macro_rules! point {
     ($($t:tt)*) => {{
@@ -69,22 +80,24 @@ macro_rules! point {
 }
 
 /// Creates a new offset vector.
-/// The number of arguments determine the dimensions.
-///
-/// # Examples
-/// ```
-/// # use geologic::*;
-/// #
-/// // A two-dimensional offset
-/// let offset = offset!(20, 40);
-///
-/// // A two-dimensional splatted offset
-/// let offset = offset!(20; 2);
-/// ```
 #[macro_export]
 macro_rules! offset {
     ($($t:tt)*) => {{
         let offset: $crate::Offset2D<_> = $crate::__vector!($($t)*);
         offset
     }};
+}
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __vector {
+    ($t: ty; 2) => {
+        $crate::Vector2D::splat(<$t>::default());
+    };
+    ($v:expr; 2) => {
+        $crate::Vector2D::splat($v)
+    };
+    ($x:expr, $y:expr) => {
+        $crate::Vector2D::new($x, $y)
+    };
 }
