@@ -1,6 +1,8 @@
 use std::ops::{Add, Sub};
 
-use crate::{Offset2D, ToOffset2D, ToVector2D, Vector2D};
+use num_traits::Num;
+
+use crate::{Bounds2D, Offset2D, ToOffset2D, ToSize2D, ToVector2D, Vector2D};
 
 /// Marker struct for a vector used as a point.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Hash)]
@@ -45,6 +47,24 @@ impl<T> Point2D<T> {
     {
         let point = point.to_vector();
         Offset2D::new(point.x - self.x, point.y - self.y)
+    }
+
+    /// Returns a new [Bounds2D] using `self` as position,
+    /// and `size` as the size.
+    ///
+    /// # Examples
+    /// ```
+    /// # use geologic::*;
+    /// #
+    /// let bounds = point!(20u32, 30).with_size(size!(50; 2));
+    ///
+    /// assert_eq!(bounds, bounds!(20, 30, 50, 50));
+    /// ```
+    pub fn with_size<S: ToSize2D<T>>(self, size: S) -> Bounds2D<T>
+    where
+        T: Num + Copy,
+    {
+        Bounds2D::from_position_and_size(self, size)
     }
 }
 

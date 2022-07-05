@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Mul, Sub};
 
 use num_traits::Num;
 
@@ -13,7 +13,7 @@ pub struct Bounds2D<T> {
 
 impl<T> Bounds2D<T>
 where
-    T: Num + Copy,
+    T: Copy,
 {
     /// Creates a new [Bounds2D]. In most cases you should use
     /// the `bounds!()` macro instead.
@@ -86,24 +86,33 @@ where
         self.position.x
     }
 
-    pub fn right(&self) -> T {
+    pub fn right(&self) -> T
+    where
+        T: Add<Output = T>,
+    {
         self.position.x + self.size.width
     }
 
-    pub fn bottom(&self) -> T {
+    pub fn bottom(&self) -> T
+    where
+        T: Add<Output = T>,
+    {
         self.position.y + self.size.height
     }
 
-    pub fn area(&self) -> T {
+    pub fn area(&self) -> T
+    where
+        T: Mul<Output = T>,
+    {
         self.size.area()
     }
 
     pub fn size(&self) -> Size2D<T> {
-        self.size.clone()
+        self.size
     }
 
     pub fn position(&self) -> Point2D<T> {
-        self.position.clone()
+        self.position
     }
 }
 

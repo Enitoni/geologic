@@ -13,7 +13,7 @@ pub struct Size2D<T> {
 
 impl<T> Size2D<T>
 where
-    T: Num + Copy,
+    T: Copy,
 {
     /// Create a new [Size2D]. In most cases you should use
     /// the `size!()` macro instead.
@@ -31,13 +31,20 @@ where
         Self { width, height }
     }
 
-    /// Creates a new [Size2D] where `width` and `height` are equal.
+    /// Returns a new [Size2D] where `width` and `height` are equal.
+    ///
+    /// Prefer using the splat syntax with the `size()` macro instead
+    /// of calling this directly.
     ///
     /// # Examples
     /// ```
     /// # use geologic::*;
     /// #
+    /// // This is acceptable, but...
     /// let size = Size2D::square(200);
+    ///
+    /// // ...this is the preferred way
+    /// let size = size!(200; 2);
     ///
     /// assert_eq!(size, size!(200, 200));
     /// ```
@@ -55,7 +62,10 @@ where
     ///
     /// assert_eq!(size.area(), 20000);
     /// ```
-    pub fn area(&self) -> T {
+    pub fn area(&self) -> T
+    where
+        T: Mul<Output = T>,
+    {
         self.width * self.height
     }
 
@@ -371,24 +381,9 @@ where
     }
 }
 
-impl<T> From<Size2D<T>> for [T; 2] {
-    fn from(size: Size2D<T>) -> Self {
-        [size.width, size.height]
-    }
-}
-
 impl<T> From<Size2D<T>> for (T, T) {
     fn from(size: Size2D<T>) -> Self {
         (size.width, size.height)
-    }
-}
-
-impl<T> From<[T; 2]> for Size2D<T>
-where
-    T: Num + Copy,
-{
-    fn from(arr: [T; 2]) -> Self {
-        Size2D::new(arr[0], arr[1])
     }
 }
 
@@ -423,10 +418,9 @@ pub trait ToSize2D<T> {
     /// ```
     /// # use geologic::*;
     /// #
-    /// let size = (200, 100).into_size();
-    /// let size = [500, 300].into_size();
+    /// let size = (200, 100).to_size();
     ///
-    /// assert_eq!(size, size!(500, 300));
+    /// assert_eq!(size, size!(200, 100));
     /// ```
     fn to_size(self) -> Size2D<T>;
 }
@@ -444,15 +438,5 @@ where
 {
     fn to_size(self) -> Size2D<T> {
         Size2D::new(self.0, self.1)
-    }
-}
-
-// Allows passing an array to functions that expect IntoSize2D
-impl<T> ToSize2D<T> for [T; 2]
-where
-    T: Num + Copy,
-{
-    fn to_size(self) -> Size2D<T> {
-        Size2D::new(self[0], self[1])
     }
 }

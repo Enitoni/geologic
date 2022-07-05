@@ -4,11 +4,17 @@
 /// # Examples
 /// ```
 /// # use geologic::*;
-/// // A Size2D
+/// // A two-dimensional size
 /// let size = size!(200, 200);
+/// 
+/// // A square shaped size
+/// let size = size!(200; 2);
 /// ```
 #[macro_export]
 macro_rules! size {
+    ($v:expr; 2) => {
+        $crate::Size2D::square($v)
+    };
     ($width:expr, $height:expr) => {
         $crate::Size2D::new($width, $height)
     };
