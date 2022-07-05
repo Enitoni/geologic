@@ -101,8 +101,8 @@ where
     ///
     /// assert_eq!(inner.grow(outer), size!(500, 900));
     /// ```
-    pub fn grow<S: IntoSize2D<T>>(&self, size: S) -> Size2D<T> {
-        let size = size.into_size();
+    pub fn grow<S: ToSize2D<T>>(&self, size: S) -> Size2D<T> {
+        let size = size.to_size();
 
         let bigger_width = if size.width > self.width {
             size.width
@@ -133,8 +133,8 @@ where
     ///
     /// assert_eq!(outer.shrink(inner), size!(100, 200));
     /// ```
-    pub fn shrink<S: IntoSize2D<T>>(&self, size: S) -> Size2D<T> {
-        let size = size.into_size();
+    pub fn shrink<S: ToSize2D<T>>(&self, size: S) -> Size2D<T> {
+        let size = size.to_size();
 
         let smaller_width = if size.width < self.width {
             size.width
@@ -164,9 +164,9 @@ where
     /// assert_eq!(size!(100, 400).constrain(min, max), size!(200, 400));
     /// assert_eq!(size!(600, 300).constrain(min, max), size!(500, 300));
     /// ```
-    pub fn constrain<S: IntoSize2D<T>>(&self, min: S, max: S) -> Size2D<T> {
-        let min = min.into_size();
-        let max = max.into_size();
+    pub fn constrain<S: ToSize2D<T>>(&self, min: S, max: S) -> Size2D<T> {
+        let min = min.to_size();
+        let max = max.to_size();
 
         self.shrink(max).grow(min)
     }
@@ -189,9 +189,9 @@ where
     ///
     /// assert_eq!(a.max_area(b), size!(200, 400));
     /// ```
-    pub fn max_area<S: IntoSize2D<T>>(&self, size: S) -> Size2D<T> {
+    pub fn max_area<S: ToSize2D<T>>(&self, size: S) -> Size2D<T> {
         let this = *self;
-        let size = size.into_size();
+        let size = size.to_size();
 
         if size > this {
             size
@@ -212,9 +212,9 @@ where
     ///
     /// assert_eq!(a.min_area(b), size!(100, 300));
     /// ```
-    pub fn min_area<S: IntoSize2D<T>>(&self, size: S) -> Size2D<T> {
+    pub fn min_area<S: ToSize2D<T>>(&self, size: S) -> Size2D<T> {
         let this = *self;
-        let size = size.into_size();
+        let size = size.to_size();
 
         if size < this {
             size
@@ -235,9 +235,9 @@ where
     ///
     /// assert_eq!(a.clamp_area(b, size!(300, 300)), size!(300, 300));
     /// ```
-    pub fn clamp_area<S: IntoSize2D<T>>(&self, min: S, max: S) -> Size2D<T> {
-        let min = min.into_size();
-        let max = max.into_size();
+    pub fn clamp_area<S: ToSize2D<T>>(&self, min: S, max: S) -> Size2D<T> {
+        let min = min.to_size();
+        let max = max.to_size();
 
         self.min_area(max).max_area(min)
     }
@@ -247,12 +247,12 @@ where
 impl<T, R> Add<R> for Size2D<T>
 where
     T: Num + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     type Output = Size2D<T>;
 
     fn add(self, rhs: R) -> Self::Output {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
         Size2D::new(self.width + rhs.width, self.height + rhs.height)
     }
 }
@@ -260,10 +260,10 @@ where
 impl<T, R> AddAssign<R> for Size2D<T>
 where
     T: Num + NumAssign + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     fn add_assign(&mut self, rhs: R) {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
 
         self.width += rhs.width;
         self.height += rhs.height;
@@ -274,12 +274,12 @@ where
 impl<T, R> Sub<R> for Size2D<T>
 where
     T: Num + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     type Output = Size2D<T>;
 
     fn sub(self, rhs: R) -> Self::Output {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
         Size2D::new(self.width - rhs.width, self.height - rhs.height)
     }
 }
@@ -287,10 +287,10 @@ where
 impl<T, R> SubAssign<R> for Size2D<T>
 where
     T: Num + NumAssign + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     fn sub_assign(&mut self, rhs: R) {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
 
         self.width -= rhs.width;
         self.height -= rhs.height;
@@ -301,12 +301,12 @@ where
 impl<T, R> Mul<R> for Size2D<T>
 where
     T: Num + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     type Output = Size2D<T>;
 
     fn mul(self, rhs: R) -> Self::Output {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
         Size2D::new(self.width * rhs.width, self.height * rhs.height)
     }
 }
@@ -314,10 +314,10 @@ where
 impl<T, R> MulAssign<R> for Size2D<T>
 where
     T: Num + NumAssign + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     fn mul_assign(&mut self, rhs: R) {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
 
         self.width *= rhs.width;
         self.height *= rhs.height;
@@ -328,12 +328,12 @@ where
 impl<T, R> Div<R> for Size2D<T>
 where
     T: Num + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     type Output = Size2D<T>;
 
     fn div(self, rhs: R) -> Self::Output {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
         Size2D::new(self.width / rhs.width, self.height / rhs.height)
     }
 }
@@ -341,10 +341,10 @@ where
 impl<T, R> DivAssign<R> for Size2D<T>
 where
     T: Num + NumAssign + Copy,
-    R: IntoSize2D<T>,
+    R: ToSize2D<T>,
 {
     fn div_assign(&mut self, rhs: R) {
-        let rhs = rhs.into_size();
+        let rhs = rhs.to_size();
 
         self.width /= rhs.width;
         self.height /= rhs.height;
@@ -416,7 +416,7 @@ where
 /// // But we can also pass a tuple
 /// size.grow((400, 200));
 /// ```
-pub trait IntoSize2D<T> {
+pub trait ToSize2D<T> {
     /// Creates a new [Size2D] from `self`
     ///
     /// # Examples
@@ -428,31 +428,31 @@ pub trait IntoSize2D<T> {
     ///
     /// assert_eq!(size, size!(500, 300));
     /// ```
-    fn into_size(self) -> Size2D<T>;
+    fn to_size(self) -> Size2D<T>;
 }
 
-impl<T> IntoSize2D<T> for Size2D<T> {
-    fn into_size(self) -> Size2D<T> {
+impl<T> ToSize2D<T> for Size2D<T> {
+    fn to_size(self) -> Size2D<T> {
         self
     }
 }
 
 // Allows passing a tuple to functions that expect IntoSize2D
-impl<T> IntoSize2D<T> for (T, T)
+impl<T> ToSize2D<T> for (T, T)
 where
     T: Num + Copy,
 {
-    fn into_size(self) -> Size2D<T> {
+    fn to_size(self) -> Size2D<T> {
         Size2D::new(self.0, self.1)
     }
 }
 
 // Allows passing an array to functions that expect IntoSize2D
-impl<T> IntoSize2D<T> for [T; 2]
+impl<T> ToSize2D<T> for [T; 2]
 where
     T: Num + Copy,
 {
-    fn into_size(self) -> Size2D<T> {
+    fn to_size(self) -> Size2D<T> {
         Size2D::new(self[0], self[1])
     }
 }

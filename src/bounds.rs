@@ -2,7 +2,7 @@ use std::ops::{Add, Sub};
 
 use num_traits::Num;
 
-use crate::{IntoSize2D, Offset2D, Point2D, Size2D, ToPoint2D};
+use crate::{Offset2D, Point2D, Size2D, ToPoint2D, ToSize2D};
 
 /// A two-dimensional bounding box.
 #[derive(Default, Debug, PartialEq, Clone, Copy, Hash)]
@@ -52,10 +52,10 @@ where
     pub fn from_position_and_size<P, S>(position: P, size: S) -> Self
     where
         P: ToPoint2D<T>,
-        S: IntoSize2D<T>,
+        S: ToSize2D<T>,
     {
         let position = position.to_vector();
-        let size = size.into_size();
+        let size = size.to_size();
 
         Self { position, size }
     }
@@ -66,7 +66,7 @@ where
     }
 
     /// Creates a new [Bounds2D] with the specified size.
-    pub fn with_size<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+    pub fn with_size<S: ToSize2D<T>>(&self, size: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, size)
     }
 
@@ -112,32 +112,32 @@ where
     T: Num + Copy + Ord,
 {
     /// See [`Size2D::grow()`](crate::Size2D::grow) for more information.
-    pub fn grow<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+    pub fn grow<S: ToSize2D<T>>(&self, size: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, self.size.grow(size))
     }
 
     /// See [`Size2D::shrink()`](crate::Size2D::shrink) for more information.
-    pub fn shrink<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+    pub fn shrink<S: ToSize2D<T>>(&self, size: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, self.size.shrink(size))
     }
 
     /// See [`Size2D::constrain()`](crate::Size2D::constrain) for more information.
-    pub fn constrain<S: IntoSize2D<T>>(&self, min: S, max: S) -> Bounds2D<T> {
+    pub fn constrain<S: ToSize2D<T>>(&self, min: S, max: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, self.size.constrain(min, max))
     }
 
     /// See [`Size2D::max_area()`](crate::Size2D::max_area) for more information.
-    pub fn max_area<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+    pub fn max_area<S: ToSize2D<T>>(&self, size: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, self.size.max_area(size))
     }
 
     /// See [`Size2D::min_area()`](crate::Size2D::min_area) for more information.
-    pub fn min_area<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+    pub fn min_area<S: ToSize2D<T>>(&self, size: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, self.size.min_area(size))
     }
 
     /// See [`Size2D::clamp_area()`](crate::Size2D::clamp_area) for more information.
-    pub fn clamp_area<S: IntoSize2D<T>>(&self, min: S, max: S) -> Bounds2D<T> {
+    pub fn clamp_area<S: ToSize2D<T>>(&self, min: S, max: S) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(self.position, self.size.clamp_area(min, max))
     }
 }
