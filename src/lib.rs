@@ -8,6 +8,7 @@ mod bounds;
 mod grid;
 mod point;
 mod size;
+mod vector;
 
 pub use crate::bounds::*;
 pub use crate::grid::*;
