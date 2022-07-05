@@ -1,11 +1,18 @@
 [package]
 name = "geologic"
-description = "Mathematical and geometrical helpers"
-version = "0.0.2"
+description = "Mathematical and geometrical abstractions with a focus on ergonomics."
+
+keywords = ["math", "vector", "algebra", "geometry"]
+categories = ["rust-patterns", "mathematics", "data-structures"]
+
+version = "0.0.3"
 edition = "2021"
 license = "MIT"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/Enitoni/geologic"
+authors = [
+  "Enitoni <root@enitoni.dev>"
+]
 
 [dependencies]
 num-traits = "0.2.15"
