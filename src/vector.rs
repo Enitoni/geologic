@@ -87,6 +87,24 @@ impl<T, K> Vector2D<T, K> {
             _kind: PhantomData,
         }
     }
+
+    #[doc(hidden)]
+    pub(crate) fn add_components<V: ToVector2D<T, U>, U>(self, rhs: V) -> Self
+    where
+        T: Add<Output = T>,
+    {
+        let rhs = rhs.to_vector();
+        Self::new(self.x + rhs.x, self.y + rhs.y)
+    }
+
+    #[doc(hidden)]
+    pub(crate) fn sub_components<V: ToVector2D<T, U>, U>(self, rhs: V) -> Self
+    where
+        T: Sub<Output = T>,
+    {
+        let rhs = rhs.to_vector();
+        Self::new(self.x - rhs.x, self.y - rhs.y)
+    }
 }
 
 impl<T, K, ToVector> Vector<T, ToVector> for Vector2D<T, K>
