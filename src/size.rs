@@ -4,6 +4,8 @@ use std::{
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
 };
 
+use crate::{Bounds2D, ToPoint2D};
+
 /// A vector describing a two-dimensional size.
 #[derive(Debug, Default, PartialEq, Clone, Copy, Hash)]
 pub struct Size2D<T> {
@@ -90,6 +92,21 @@ where
             width: self.width.as_(),
             height: self.height.as_(),
         }
+    }
+
+    /// Returns a new [Bounds2D] using `self` as size,
+    /// and `position` as the position.
+    ///
+    /// # Examples
+    /// ```
+    /// # use geologic::*;
+    /// #
+    /// let bounds = size!(10i32, 15).with_position(point!(2, 4));
+    ///
+    /// assert_eq!(bounds, bounds!(2, 4, 10, 15));
+    /// ```
+    pub fn with_position<P: ToPoint2D<T>>(self, position: P) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(position, self)
     }
 }
 
