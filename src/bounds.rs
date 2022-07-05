@@ -1,10 +1,11 @@
+use std::ops::{Add, Sub};
+
 use num_traits::Num;
 
 use crate::{IntoPoint2D, IntoSize2D, Point2D, Size2D};
 
-/// A bounding box, with a size and position.
-/// Also known as a rect, or rectangle.
-#[derive(Debug, Clone, Copy)]
+/// A two-dimensional bounding box.
+#[derive(Default, Debug, PartialEq, Clone, Copy, Hash)]
 pub struct Bounds2D<T> {
     position: Point2D<T>,
     size: Size2D<T>,
@@ -14,6 +15,18 @@ impl<T> Bounds2D<T>
 where
     T: Num + Copy,
 {
+    /// Creates a new [Bounds2D]. In most cases you should use
+    /// the `bounds!()` macro instead.
+    ///
+    /// # Examples
+    /// ```
+    /// # use geologic::*;
+    /// #
+    /// let bounds = Bounds2D::new(20, 50, 80, 90);
+    ///
+    /// // Prefer doing this instead
+    /// let bounds = bounds!(20, 50, 80, 90);
+    /// ```
     pub fn new(x: T, y: T, width: T, height: T) -> Self {
         let position = Point2D::new(x, y);
         let size = Size2D::new(width, height);
@@ -21,7 +34,22 @@ where
         Self { position, size }
     }
 
-    pub fn from<P, S>(position: P, size: S) -> Self
+    /// Creates a new [Bounds2D] from a position and size.
+    /// This is useful when you have a size and position, and want to create a bounds out of it.
+    ///
+    /// However, if you already have a [Size2D] or a [Point2D],
+    /// you should use the `.with_` method instead.
+    ///
+    /// # Examples
+    /// ```
+    /// # use geologic::*;
+    /// #
+    /// let bounds = Bounds2D::from_position_and_size(point!(20, 40), size!(10, 10));
+    ///
+    /// // Prefer doing this instead
+    /// let bounds = point!(20, 40).with_size(size!(10, 10));
+    /// ```
+    pub fn from_position_and_size<P, S>(position: P, size: S) -> Self
     where
         P: IntoPoint2D<T>,
         S: IntoSize2D<T>,
@@ -32,8 +60,14 @@ where
         Self { position, size }
     }
 
-    pub fn move_to<P: IntoPoint2D<T>>(&self, point: P) -> Bounds2D<T> {
-        Bounds2D::from(point, self.size)
+    /// Creates a new [Bounds2D] with the specified position.
+    pub fn with_position<P: IntoPoint2D<T>>(&self, point: P) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(point, self.size)
+    }
+
+    /// Creates a new [Bounds2D] with the specified size.
+    pub fn with_size<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(self.position, size)
     }
 
     pub fn width(&self) -> T {
@@ -60,6 +94,10 @@ where
         self.position.y + self.size.height
     }
 
+    pub fn area(&self) -> T {
+        self.size.area()
+    }
+
     pub fn size(&self) -> Size2D<T> {
         self.size.clone()
     }
@@ -73,23 +111,78 @@ impl<T> Bounds2D<T>
 where
     T: Num + Copy + Ord,
 {
-    pub fn expand<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
-        let size = size.into_size();
-
-        // TODO: Make this max/min method on size
-        let new_width = self.size.width.max(size.width);
-        let new_height = self.size.height.max(size.height);
-
-        Bounds2D::from(self.position, (new_width, new_height))
+    /// See [`Size2D::grow()`](crate::Size2D::grow) for more information.
+    pub fn grow<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(self.position, self.size.grow(size))
     }
 
+    /// See [`Size2D::shrink()`](crate::Size2D::shrink) for more information.
     pub fn shrink<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
-        let size = size.into_size();
+        Bounds2D::from_position_and_size(self.position, self.size.shrink(size))
+    }
 
-        let new_width = self.size.width.min(size.width);
-        let new_height = self.size.height.min(size.height);
+    /// See [`Size2D::constrain()`](crate::Size2D::constrain) for more information.
+    pub fn constrain<S: IntoSize2D<T>>(&self, min: S, max: S) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(self.position, self.size.constrain(min, max))
+    }
 
-        Bounds2D::from(self.position, (new_width, new_height))
+    /// See [`Size2D::max_area()`](crate::Size2D::max_area) for more information.
+    pub fn max_area<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(self.position, self.size.max_area(size))
+    }
+
+    /// See [`Size2D::min_area()`](crate::Size2D::min_area) for more information.
+    pub fn min_area<S: IntoSize2D<T>>(&self, size: S) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(self.position, self.size.min_area(size))
+    }
+
+    /// See [`Size2D::clamp_area()`](crate::Size2D::clamp_area) for more information.
+    pub fn clamp_area<S: IntoSize2D<T>>(&self, min: S, max: S) -> Bounds2D<T> {
+        Bounds2D::from_position_and_size(self.position, self.size.clamp_area(min, max))
+    }
+}
+
+impl<T> Add<Point2D<T>> for Bounds2D<T>
+where
+    T: Num + Copy,
+{
+    type Output = Bounds2D<T>;
+
+    fn add(self, rhs: Point2D<T>) -> Self::Output {
+        Bounds2D::from_position_and_size(self.position + rhs, self.size)
+    }
+}
+
+impl<T> Add<Size2D<T>> for Bounds2D<T>
+where
+    T: Num + Copy,
+{
+    type Output = Bounds2D<T>;
+
+    fn add(self, rhs: Size2D<T>) -> Self::Output {
+        Bounds2D::from_position_and_size(self.position, self.size + rhs)
+    }
+}
+
+impl<T> Sub<Point2D<T>> for Bounds2D<T>
+where
+    T: Num + Copy,
+{
+    type Output = Bounds2D<T>;
+
+    fn sub(self, rhs: Point2D<T>) -> Self::Output {
+        Bounds2D::from_position_and_size(self.position - rhs, self.size)
+    }
+}
+
+impl<T> Sub<Size2D<T>> for Bounds2D<T>
+where
+    T: Num + Copy,
+{
+    type Output = Bounds2D<T>;
+
+    fn sub(self, rhs: Size2D<T>) -> Self::Output {
+        Bounds2D::from_position_and_size(self.position, self.size - rhs)
     }
 }
 
