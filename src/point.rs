@@ -2,7 +2,7 @@ use num_traits::{AsPrimitive, Num, NumAssign};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 /// A vector describing two-dimensional point in space, or offset.
-#[derive(Default, Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Debug, PartialEq, Clone, Copy, Hash)]
 pub struct Point2D<T> {
     pub(crate) x: T,
     pub(crate) y: T,
