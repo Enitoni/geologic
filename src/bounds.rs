@@ -37,11 +37,11 @@ where
     }
 
     pub fn width(&self) -> T {
-        self.size.width()
+        self.size.width
     }
 
     pub fn height(&self) -> T {
-        self.size.height()
+        self.size.height
     }
 
     pub fn top(&self) -> T {
