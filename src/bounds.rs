@@ -34,6 +34,27 @@ where
         Self { position, size }
     }
 
+    /// Returns a new [Bounds2D] where all components are set to `value`.
+    ///
+    /// Prefer using the splat syntax with the macro instead of
+    /// calling this directly.
+    ///
+    /// # Examples
+    /// ```
+    /// # use geologic:*;
+    /// #
+    /// // This is acceptable, but...
+    /// let bounds = Bounds2D::splat(8);
+    ///
+    /// // ...this is the preferred way
+    /// let bounds = bounds!(8; 2);
+    ///
+    /// assert_eq!(bounds, bounds!(8, 8, 8, 8));
+    /// ```
+    pub fn splat(value: T) -> Self {
+        Self::from_position_and_size(Point2D::splat(value), Size2D::square(value))
+    }
+
     /// Creates a new [Bounds2D] from a position and size.
     /// This is useful when you have a size and position, and want to create a bounds out of it.
     ///
