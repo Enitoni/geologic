@@ -3,10 +3,10 @@ use std::{
     ops::{IndexMut, Range},
 };
 
-use crate::{IntoBounds2D, IntoPoint2D, Size2D};
+use crate::{IntoBounds2D, Size2D, ToPoint2D};
 
-fn index_at<P: IntoPoint2D<usize>>(point: P, grid_width: usize, chunk_size: usize) -> usize {
-    let (x, y) = point.into_point().into();
+fn index_at<P: ToPoint2D<usize>>(point: P, grid_width: usize, chunk_size: usize) -> usize {
+    let (x, y) = point.to_vector().into();
 
     let cell_x = x * chunk_size;
     let cell_y = y * (grid_width * chunk_size);
@@ -188,7 +188,7 @@ where
 
     pub fn index<P>(&self, position: P) -> usize
     where
-        P: IntoPoint2D<usize>,
+        P: ToPoint2D<usize>,
     {
         index_at(position, self.width, self.chunk_size)
     }

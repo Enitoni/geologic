@@ -2,7 +2,7 @@ use std::ops::{Add, Sub};
 
 use num_traits::Num;
 
-use crate::{IntoPoint2D, IntoSize2D, Point2D, Size2D};
+use crate::{IntoSize2D, Offset2D, Point2D, Size2D, ToPoint2D};
 
 /// A two-dimensional bounding box.
 #[derive(Default, Debug, PartialEq, Clone, Copy, Hash)]
@@ -51,17 +51,17 @@ where
     /// ```
     pub fn from_position_and_size<P, S>(position: P, size: S) -> Self
     where
-        P: IntoPoint2D<T>,
+        P: ToPoint2D<T>,
         S: IntoSize2D<T>,
     {
-        let position = position.into_point();
+        let position = position.to_vector();
         let size = size.into_size();
 
         Self { position, size }
     }
 
     /// Creates a new [Bounds2D] with the specified position.
-    pub fn with_position<P: IntoPoint2D<T>>(&self, point: P) -> Bounds2D<T> {
+    pub fn with_position<P: ToPoint2D<T>>(&self, point: P) -> Bounds2D<T> {
         Bounds2D::from_position_and_size(point, self.size)
     }
 
@@ -142,13 +142,13 @@ where
     }
 }
 
-impl<T> Add<Point2D<T>> for Bounds2D<T>
+impl<T> Add<Offset2D<T>> for Bounds2D<T>
 where
     T: Num + Copy,
 {
     type Output = Bounds2D<T>;
 
-    fn add(self, rhs: Point2D<T>) -> Self::Output {
+    fn add(self, rhs: Offset2D<T>) -> Self::Output {
         Bounds2D::from_position_and_size(self.position + rhs, self.size)
     }
 }
@@ -164,13 +164,13 @@ where
     }
 }
 
-impl<T> Sub<Point2D<T>> for Bounds2D<T>
+impl<T> Sub<Offset2D<T>> for Bounds2D<T>
 where
     T: Num + Copy,
 {
     type Output = Bounds2D<T>;
 
-    fn sub(self, rhs: Point2D<T>) -> Self::Output {
+    fn sub(self, rhs: Offset2D<T>) -> Self::Output {
         Bounds2D::from_position_and_size(self.position - rhs, self.size)
     }
 }

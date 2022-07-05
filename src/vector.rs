@@ -41,16 +41,16 @@ impl<T, K> Vector2D<T, K> {
     /// # use geologic::*;
     /// #
     /// // Avoid doing this
-    /// let position: Vector2D<_, Position> = Vector2D::new(20, 40);
+    /// let point: Vector2D<_, Point> = Vector2D::new(20, 40);
     ///
     /// // This is better, but not great
-    /// let position: Position2D<_> = Vector2D::new(20, 40);
+    /// let point: Point2D<_> = Vector2D::new(20, 40);
     ///
     /// // This is acceptable, but...
-    /// let position = Position2D::new(20, 40);
+    /// let point = Point2D::new(20, 40);
     ///
     /// // ...this is the preferred way
-    /// let position = position!(20, 40);
+    /// let point = point!(20, 40);
     /// ```
     pub fn new(x: T, y: T) -> Self {
         Self {

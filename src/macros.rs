@@ -1,12 +1,3 @@
-/// Shorthand for creating a new point.
-/// The number of arguments determine the dimensions.
-#[macro_export]
-macro_rules! point {
-    ($x:expr, $y:expr) => {
-        crate::Point2D::new($x, $y)
-    };
-}
-
 /// Shorthand for creating a new size.
 /// The number of arguments determine the dimensions.
 ///
@@ -50,24 +41,24 @@ macro_rules! __vector {
     };
 }
 
-/// Creates a new position vector.
+/// Creates a new point vector.
 /// The number of arguments determine the dimensions.
 ///
 /// # Examples
 /// ```
 /// # use geologic::*;
 /// #
-/// // A two-dimensional position
-/// let position = position!(20, 40);
+/// // A two-dimensional point
+/// let point = point!(20, 40);
 ///
-/// // A two-dimensional splatted position
-/// let position = position!(20; 2);
+/// // A two-dimensional splatted point
+/// let point = point!(20; 2);
 /// ```
 #[macro_export]
-macro_rules! position {
+macro_rules! point {
     ($($t:tt)*) => {{
-        let position: $crate::Position2D<_> = $crate::__vector!($($t)*);
-        position
+        let point: $crate::Point2D<_> = $crate::__vector!($($t)*);
+        point
     }};
 }
 
