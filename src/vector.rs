@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 ///
 /// In most cases you should not instantiate this directly, but rather use
 /// the specialized macros.
-#[derive(Default, Clone, Copy, Debug, PartialEq, Hash)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Hash)]
 pub struct Vector2D<T, Kind> {
     pub x: T,
     pub y: T,
