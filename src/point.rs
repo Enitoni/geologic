@@ -1,8 +1,7 @@
 use num_traits::{AsPrimitive, Num, NumAssign};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-/// A 2D vector. You can use this
-/// for positioning or displacement.
+/// A vector describing two-dimensional point in space, or offset.
 #[derive(Default, Debug, PartialEq, Clone, Copy)]
 pub struct Point2D<T> {
     pub(crate) x: T,
