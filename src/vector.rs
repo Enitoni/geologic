@@ -41,3 +41,15 @@ impl<T, K> ToVector2D<T, K> for (T, T) {
         Vector2D::new(self.0, self.1)
     }
 }
+
+impl<T, K> From<Vector2D<T, K>> for (T, T) {
+    fn from(vector: Vector2D<T, K>) -> Self {
+        (vector.x, vector.y)
+    }
+}
+
+impl<T, K> From<(T, T)> for Vector2D<T, K> {
+    fn from(tuple: (T, T)) -> Self {
+        Vector2D::new(tuple.0, tuple.1)
+    }
+}
