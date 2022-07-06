@@ -207,6 +207,16 @@ impl<T, K> ToVector2D<T, K> for (T, T) {
     }
 }
 
+/// Makes it so an array can be used for interfaces expecting [`Vector2D`].
+impl<T, K> ToVector2D<T, K> for [T; 2]
+where
+    T: Copy,
+{
+    fn to_vector(self) -> Vector2D<T, K> {
+        Vector2D::new(self[0], self[1])
+    }
+}
+
 impl<T, K> From<Vector2D<T, K>> for (T, T) {
     fn from(vector: Vector2D<T, K>) -> Self {
         (vector.x, vector.y)
@@ -216,5 +226,20 @@ impl<T, K> From<Vector2D<T, K>> for (T, T) {
 impl<T, K> From<(T, T)> for Vector2D<T, K> {
     fn from(tuple: (T, T)) -> Self {
         Vector2D::new(tuple.0, tuple.1)
+    }
+}
+
+impl<T, K> From<[T; 2]> for Vector2D<T, K>
+where
+    T: Copy,
+{
+    fn from(arr: [T; 2]) -> Self {
+        Vector2D::new(arr[0], arr[1])
+    }
+}
+
+impl<T, K> From<Vector2D<T, K>> for [T; 2] {
+    fn from(vector: Vector2D<T, K>) -> Self {
+        [vector.x, vector.y]
     }
 }
