@@ -12,7 +12,7 @@
 //! // Import the prelude for convenience
 //! use geologic::*;
 //!
-//! let position = point!(0, 40);
+//! let position = point!(0i32, 40);
 //! let size = size!(5; 2);
 //!
 //! // Derive a Bounds2D from a position and size.
@@ -25,9 +25,9 @@
 //! let enlarged_bounds = moved_bounds + size!(10, 10);
 //! assert_eq!(enlarged_bounds, bounds!(3, 45, 15, 15));
 //!
-//! // We can also use tuples for operations like these
-//! let moved_bounds = bounds + (10, 20);
-//! assert_eq!(moved_bounds, bounds!(10, 60, 5, 5))
+//! // We can also use tuples and types interchangeably for operations like these
+//! let moved_bounds = bounds.with_position((0, 0));
+//! assert_eq!(moved_bounds, bounds!(0, 0, 5, 5))
 //! ```
 
 #[macro_use]

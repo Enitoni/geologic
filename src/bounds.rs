@@ -41,7 +41,7 @@ where
     ///
     /// # Examples
     /// ```
-    /// # use geologic:*;
+    /// # use geologic::*;
     /// #
     /// // This is acceptable, but...
     /// let bounds = Bounds2D::splat(8);
